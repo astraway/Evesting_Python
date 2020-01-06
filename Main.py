@@ -9,7 +9,7 @@ from  SQL_CLASS import SQL
 import requests
 from PROCESSOR_STOCK_PRICE import STOCK_PRICE
 from PROCESSOR_NET_INCOME import NET_INCOME
-
+from PROCESSOR_OPERATING_CASH import OPERATING_CASH
 
 __app_name__ = 'EVesting_Main'
 
@@ -41,7 +41,8 @@ class Evesting:
         sqlite_connection_dict = {
 
             'sqlite_Financials_table': "Financials",
-            'sqlite_Net_Income_table': "Net_Income"
+            'sqlite_Net_Income_table': "Net_Income",
+            'sqlite_Operating_Cash_table': 'Operating_Cash'
 
         }
 
@@ -65,7 +66,10 @@ class Evesting:
         SQL.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Net_Income_table'] , ni_df)
 
 
-
+        logger.info('Retreiving Operating Cash...')
+        oc_df = OPERATING_CASH.processor(self, stock_ticker)
+        logger.info('Writing Operating Cash to sqlite...')
+        SQL.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Operating_Cash_table'] , oc_df)
 
 
 
