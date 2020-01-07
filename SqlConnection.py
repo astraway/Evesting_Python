@@ -8,7 +8,7 @@ from logging.handlers import TimedRotatingFileHandler
 import settings
 
 
-__app_name__ = 'SQL_CLASS'
+__app_name__ = 'SqlConnection'
 
 # root logger
 root_logger = logging.getLogger()

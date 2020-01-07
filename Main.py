@@ -5,7 +5,7 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 import settings
-from  SQL_CLASS import Sql
+from  SqlConnection import Sql
 import requests
 from ProcessorStockPrice import StockPrice
 from ProcessorNetIncome import NetIncome
