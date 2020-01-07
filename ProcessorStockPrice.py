@@ -1,7 +1,7 @@
 import requests
 
 
-class STOCK_PRICE:
+class StockPrice:
 
     def __init__(self, stock_ticker):
         self.stock_ticker = stock_ticker

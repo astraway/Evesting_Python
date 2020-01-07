@@ -33,7 +33,7 @@ logger = logging.getLogger(__app_name__)
 
 
 
-class SQL:
+class Sql:
     def __init__(self,sqal_engine,connectDict,df,query ):
         self.sqal_engine = sqal_engine
         self.connectDict = connectDict

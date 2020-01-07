@@ -5,11 +5,11 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 import settings
-from  SQL_CLASS import SQL
+from  SQL_CLASS import Sql
 import requests
-from PROCESSOR_STOCK_PRICE import STOCK_PRICE
-from PROCESSOR_NET_INCOME import NET_INCOME
-from PROCESSOR_OPERATING_CASH import OPERATING_CASH
+from ProcessorStockPrice import StockPrice
+from ProcessorNetIncome import NetIncome
+from ProcessorOperatingCash import OperatingCash
 
 __app_name__ = 'EVesting_Main'
 
@@ -46,9 +46,9 @@ class Evesting:
 
         }
 
-        sqal_engine = SQL.create_sqlite_engine(self)
+        sqal_engine = Sql.create_sqlite_engine(self)
         query = '''select * from Financials'''
-        fin_data = SQL.sqlite_read(self, query, sqal_engine, sqlite_connection_dict)
+        fin_data = Sql.sqlite_read(self, query, sqal_engine, sqlite_connection_dict)
         print(fin_data.head())
 
 
@@ -57,19 +57,19 @@ class Evesting:
         print("What stock ticker would you like to know about ? : ")
 
         stock_ticker = input()
-        STOCK_PRICE(stock_ticker)
+        StockPrice(stock_ticker)
 
 
         logger.info('Retreiving Net Income...')
-        ni_df = NET_INCOME.processor(self, stock_ticker)
+        ni_df = NetIncome.processor(self, stock_ticker)
         logger.info('Writing Net Income to sqlite...')
-        SQL.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Net_Income_table'] , ni_df)
+        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Net_Income_table'], ni_df)
 
 
         logger.info('Retreiving Operating Cash...')
-        oc_df = OPERATING_CASH.processor(self, stock_ticker)
+        oc_df = OperatingCash.processor(self, stock_ticker)
         logger.info('Writing Operating Cash to sqlite...')
-        SQL.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Operating_Cash_table'] , oc_df)
+        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Operating_Cash_table'], oc_df)
 
 
 

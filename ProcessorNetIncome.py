@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import json
 
-class NET_INCOME:
+class NetIncome:
 
 
     @staticmethod

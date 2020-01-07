@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import json
 
-class OPERATING_CASH:
+class OperatingCash:
 
 
     @staticmethod
