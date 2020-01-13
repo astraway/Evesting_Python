@@ -5,11 +5,10 @@ import json
 class NetIncome:
 
 
-    @staticmethod
-    def processor(self, stock_ticker):
-        self.stock_ticker = stock_ticker
 
-        response = requests.get(f"https://financialmodelingprep.com/api/v3/financials/income-statement/{self.stock_ticker}")
+    def processor(self, stock_ticker, df ):
+        co_value_investing_data = df
+        response = requests.get(f"https://financialmodelingprep.com/api/v3/financials/income-statement/{stock_ticker}")
         print(response.status_code)
         for _ in response.json()['financials']:
             print(f"{stock_ticker} had a NET_INCOME of : {_['Net Income']} on : {_['date']}")
@@ -20,7 +19,8 @@ class NetIncome:
 
         json_df = json_df[['date', 'Net Income']]
         json_df.rename(columns = {'date': 'DATE', 'Net Income': 'NET_INCOME'}, inplace = True)
-        json_df['STOCK_TICKER'] = self.stock_ticker
+        json_df['STOCK_TICKER'] = stock_ticker
 
-        return json_df
+        co_value_investing_data["NET_INCOME"] = json_df["NET_INCOME"].iloc[1]
+        return json_df , co_value_investing_data
 

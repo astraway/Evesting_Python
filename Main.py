@@ -15,6 +15,7 @@ __app_name__ = 'EVesting_Main'
 
 # root logger
 root_logger = logging.getLogger()
+
 root_logger.setLevel(logging.INFO)
 
 # stream handler
@@ -34,9 +35,14 @@ root_logger.addHandler(fileHandler)
 # local logger
 logger = logging.getLogger(__app_name__)
 
+
 class Evesting:
 
     def __init__(self):
+
+        co_value_investing_data = pd.DataFrame()
+
+
 
         sqlite_connection_dict = {
 
@@ -45,6 +51,9 @@ class Evesting:
             'sqlite_Operating_Cash_table': 'Operating_Cash'
 
         }
+
+
+
 
         sqal_engine = Sql.create_sqlite_engine(self)
         query = '''select * from Financials'''
@@ -56,24 +65,28 @@ class Evesting:
 
         print("What stock ticker would you like to know about ? : ")
 
+
+
         stock_ticker = input()
         StockPrice(stock_ticker)
 
 
+
         logger.info('Retreiving Net Income...')
-        ni_df = NetIncome.processor(self, stock_ticker)
+        ni = NetIncome()
+        ni_df, co_value_investing_data = ni.processor(stock_ticker, co_value_investing_data)
         logger.info('Writing Net Income to sqlite...')
         Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Net_Income_table'], ni_df)
 
 
+
         logger.info('Retreiving Operating Cash...')
-        oc_df = OperatingCash.processor(self, stock_ticker)
+        oc = OperatingCash()
+        oc_df, co_value_investing_data = oc.Processor( stock_ticker,co_value_investing_data)
         logger.info('Writing Operating Cash to sqlite...')
         Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Operating_Cash_table'], oc_df)
 
 
-
-
-
+        print(co_value_investing_data.head())
 
 Evesting()
