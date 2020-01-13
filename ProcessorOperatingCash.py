@@ -18,7 +18,7 @@ class OperatingCash:
 
         json_df = json_df[['date', 'Operating Cash Flow']]
         json_df.rename(columns = {'date': 'DATE', 'Operating Cash Flow': 'OPERATING_CASH_FLOW'}, inplace = True)
-        json_df['STOCK_TICKER'] = stock_ticker
-        co_value_investing_data["OPERATING_CASH_FLOW"] = json_df["OPERATING_CASH_FLOW"].iloc[1]
-        return json_df, co_value_investing_data
 
+        co_value_investing_data["OPERATING_CASH"] = json_df["OPERATING_CASH_FLOW"].head(1)
+
+        return co_value_investing_data

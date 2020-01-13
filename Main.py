@@ -40,12 +40,15 @@ class Evesting:
 
     def __init__(self):
 
-        co_value_investing_data = pd.DataFrame()
+
+        column_names = ["STOCK_TICKER", "NET_INCOME", "OPERATING_CASH"]
+        co_value_investing_data = pd.DataFrame(columns = column_names)
 
 
 
         sqlite_connection_dict = {
 
+            'sqlite_co_value_investing_data_table' : "Value_Investing",
             'sqlite_Financials_table': "Financials",
             'sqlite_Net_Income_table': "Net_Income",
             'sqlite_Operating_Cash_table': 'Operating_Cash'
@@ -70,21 +73,25 @@ class Evesting:
         stock_ticker = input()
         StockPrice(stock_ticker)
 
+        co_value_investing_data = co_value_investing_data.append({'STOCK_TICKER':stock_ticker }, ignore_index=True)
 
 
         logger.info('Retreiving Net Income...')
         ni = NetIncome()
-        ni_df, co_value_investing_data = ni.processor(stock_ticker, co_value_investing_data)
-        logger.info('Writing Net Income to sqlite...')
-        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Net_Income_table'], ni_df)
+        co_value_investing_data = ni.processor(stock_ticker, co_value_investing_data)
+
 
 
 
         logger.info('Retreiving Operating Cash...')
         oc = OperatingCash()
-        oc_df, co_value_investing_data = oc.Processor( stock_ticker,co_value_investing_data)
-        logger.info('Writing Operating Cash to sqlite...')
-        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Operating_Cash_table'], oc_df)
+        co_value_investing_data = oc.Processor( stock_ticker,co_value_investing_data)
+
+
+
+        #writting all values to SQL
+        logger.info('Writing co_value_investing_data to sqlite...')
+        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_co_value_investing_data_table'], co_value_investing_data)
 
 
         print(co_value_investing_data.head())

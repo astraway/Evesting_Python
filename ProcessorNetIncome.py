@@ -19,8 +19,9 @@ class NetIncome:
 
         json_df = json_df[['date', 'Net Income']]
         json_df.rename(columns = {'date': 'DATE', 'Net Income': 'NET_INCOME'}, inplace = True)
-        json_df['STOCK_TICKER'] = stock_ticker
 
-        co_value_investing_data["NET_INCOME"] = json_df["NET_INCOME"].iloc[1]
-        return json_df , co_value_investing_data
+
+        co_value_investing_data["NET_INCOME"] = json_df["NET_INCOME"].head(1)
+
+        return  co_value_investing_data
 
