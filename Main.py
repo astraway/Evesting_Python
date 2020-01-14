@@ -1,15 +1,13 @@
 import pandas as pd
-import sqlalchemy
-from sqlalchemy import create_engine
 import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 import settings
 from  SqlConnection import Sql
-import requests
-from ProcessorStockPrice import StockPrice
-from ProcessorNetIncome import NetIncome
-from ProcessorOperatingCash import OperatingCash
+from Processors.ProcessorStockPrice import StockPrice
+from Processors.ProcessorNetIncome import NetIncome
+from Processors.ProcessorOperatingCash import OperatingCash
+from processorfactory import ProcessorFactory
 
 __app_name__ = 'EVesting_Main'
 
@@ -55,7 +53,7 @@ class Evesting:
 
         }
 
-
+        factory = ProcessorFactory()
 
 
         sqal_engine = Sql.create_sqlite_engine(self)
@@ -69,23 +67,29 @@ class Evesting:
         print("What stock ticker would you like to know about ? : ")
 
 
-
+        #takes user input for stock tick...
         stock_ticker = input()
-        StockPrice(stock_ticker)
+        co_value_investing_data = co_value_investing_data.append({'STOCK_TICKER': stock_ticker}, ignore_index=True)
 
-        co_value_investing_data = co_value_investing_data.append({'STOCK_TICKER':stock_ticker }, ignore_index=True)
+
+        logger.info('Retreiving Stock Price...')
+        sp= factory.create_instance("StockPrice")
+        sp.processor(stock_ticker,co_value_investing_data)
+
+
+
 
 
         logger.info('Retreiving Net Income...')
-        ni = NetIncome()
+        ni = factory.create_instance("NetIncome")
         co_value_investing_data = ni.processor(stock_ticker, co_value_investing_data)
 
 
 
 
         logger.info('Retreiving Operating Cash...')
-        oc = OperatingCash()
-        co_value_investing_data = oc.Processor( stock_ticker,co_value_investing_data)
+        oc = factory.create_instance("OperatingCash")
+        co_value_investing_data = oc.processor(stock_ticker, co_value_investing_data)
 
 
 

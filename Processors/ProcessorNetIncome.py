@@ -1,8 +1,10 @@
 import requests
 import pandas as pd
 import json
+from .ABC_Processor import ProcessorABC
 
-class NetIncome:
+
+class NetIncome(ProcessorABC):
 
 
 
