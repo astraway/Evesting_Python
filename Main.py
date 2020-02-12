@@ -46,18 +46,18 @@ class Evesting:
 
         sqlite_connection_dict = {
 
-            'sqlite_co_value_investing_data_table' : "Value_Investing",
-            'sqlite_Financials_table': "Financials",
-            'sqlite_Net_Income_table': "Net_Income",
-            'sqlite_Operating_Cash_table': 'Operating_Cash'
+            'sqlite_co_value_investing_data_table' : "value_investing",
+            'sqlite_Financials_table': "financials",
+            'sqlite_Net_Income_table': "net_income",
+            'sqlite_Operating_Cash_table': 'operating_cash'
 
         }
 
         factory = ProcessorFactory()
 
-
+        #sqal_engine = Sql.create_postgres_engine(self)
         sqal_engine = Sql.create_sqlite_engine(self)
-        query = '''select * from Financials'''
+        query = '''select * from financials'''
         fin_data = Sql.sqlite_read(self, query, sqal_engine, sqlite_connection_dict)
         print(fin_data.head())
 
