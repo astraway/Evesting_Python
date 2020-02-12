@@ -1,15 +1,13 @@
 import pandas as pd
-import sqlalchemy
-from sqlalchemy import create_engine
 import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 import settings
 from  SqlConnection import Sql
-import requests
-from ProcessorStockPrice import StockPrice
-from ProcessorNetIncome import NetIncome
-from ProcessorOperatingCash import OperatingCash
+from Processors.ProcessorStockPrice import StockPrice
+from Processors.ProcessorNetIncome import NetIncome
+from Processors.ProcessorOperatingCash import OperatingCash
+from processorfactory import ProcessorFactory
 
 __app_name__ = 'EVesting_Main'
 
@@ -40,23 +38,26 @@ class Evesting:
 
     def __init__(self):
 
-        co_value_investing_data = pd.DataFrame()
+
+        column_names = ["STOCK_TICKER", "NET_INCOME", "OPERATING_CASH"]
+        co_value_investing_data = pd.DataFrame(columns = column_names)
 
 
 
         sqlite_connection_dict = {
 
-            'sqlite_Financials_table': "Financials",
-            'sqlite_Net_Income_table': "Net_Income",
-            'sqlite_Operating_Cash_table': 'Operating_Cash'
+            'sqlite_co_value_investing_data_table' : "value_investing",
+            'sqlite_Financials_table': "financials",
+            'sqlite_Net_Income_table': "net_income",
+            'sqlite_Operating_Cash_table': 'operating_cash'
 
         }
 
+        factory = ProcessorFactory()
 
-
-
+        #sqal_engine = Sql.create_postgres_engine(self)
         sqal_engine = Sql.create_sqlite_engine(self)
-        query = '''select * from Financials'''
+        query = '''select * from financials'''
         fin_data = Sql.sqlite_read(self, query, sqal_engine, sqlite_connection_dict)
         print(fin_data.head())
 
@@ -66,25 +67,35 @@ class Evesting:
         print("What stock ticker would you like to know about ? : ")
 
 
-
+        #takes user input for stock tick...
         stock_ticker = input()
-        StockPrice(stock_ticker)
+        co_value_investing_data = co_value_investing_data.append({'STOCK_TICKER': stock_ticker}, ignore_index=True)
+
+
+        logger.info('Retreiving Stock Price...')
+        sp= factory.create_instance("StockPrice")
+        sp.processor(stock_ticker,co_value_investing_data)
+
+
 
 
 
         logger.info('Retreiving Net Income...')
-        ni = NetIncome()
-        ni_df, co_value_investing_data = ni.processor(stock_ticker, co_value_investing_data)
-        logger.info('Writing Net Income to sqlite...')
-        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Net_Income_table'], ni_df)
+        ni = factory.create_instance("NetIncome")
+        co_value_investing_data = ni.processor(stock_ticker, co_value_investing_data)
+
 
 
 
         logger.info('Retreiving Operating Cash...')
-        oc = OperatingCash()
-        oc_df, co_value_investing_data = oc.Processor( stock_ticker,co_value_investing_data)
-        logger.info('Writing Operating Cash to sqlite...')
-        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_Operating_Cash_table'], oc_df)
+        oc = factory.create_instance("OperatingCash")
+        co_value_investing_data = oc.processor(stock_ticker, co_value_investing_data)
+
+
+
+        #writting all values to SQL
+        logger.info('Writing co_value_investing_data to sqlite...')
+        Sql.sqlite_df_insert(self, sqal_engine, sqlite_connection_dict['sqlite_co_value_investing_data_table'], co_value_investing_data)
 
 
         print(co_value_investing_data.head())
