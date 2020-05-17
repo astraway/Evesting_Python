@@ -10,3 +10,4 @@ class StockPrice(ProcessorABC):
         #print(response.status_code)
         print(f"{stock_ticker} has a current Stock price of : {response.json()['price']}")
 
+

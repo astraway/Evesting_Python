@@ -39,6 +39,7 @@ class Evesting:
     def __init__(self):
 
 
+
         column_names = ["STOCK_TICKER", "NET_INCOME", "OPERATING_CASH"]
         co_value_investing_data = pd.DataFrame(columns = column_names)
 
@@ -101,3 +102,5 @@ class Evesting:
         print(co_value_investing_data.head())
 
 Evesting()
+
+
