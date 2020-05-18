@@ -4,9 +4,6 @@ import os
 from logging.handlers import TimedRotatingFileHandler
 import settings
 from  SqlConnection import Sql
-from Processors.ProcessorStockPrice import StockPrice
-from Processors.ProcessorNetIncome import NetIncome
-from Processors.ProcessorOperatingCash import OperatingCash
 from processorfactory import ProcessorFactory
 
 __app_name__ = 'EVesting_Main'
@@ -92,6 +89,10 @@ class Evesting:
         oc = factory.create_instance("OperatingCash")
         co_value_investing_data = oc.processor(stock_ticker, co_value_investing_data)
 
+
+        logger.info('Retreiving Sales...')
+        s = factory.create_instance("Sales")
+        co_value_investing_data = s.processor(stock_ticker, co_value_investing_data)
 
 
         #writting all values to SQL
